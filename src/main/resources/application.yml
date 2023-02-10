@@ -1,0 +1,45 @@
+server:
+  port: 9101
+
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/companybot
+    username: ${POSTGRES_NAME}
+    password: ${POSTGRES_PASSWORD}
+
+
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        show_sql: true
+        format_sql: true
+        hbm2ddl:
+          auto: validate
+
+
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+logging:
+  level:
+    org.springframework: ERROR
+    ru.veselov: INFO
+    org.hibernate: ERROR
+  pattern:
+    console: "%magenta(%d{yyyy-MM-dd HH:mm:ss}) [%yellow(%thread)] %highlight(%-5level) %green(%logger{36}): %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36}: %msg%n"
+  file:
+    name: ${logging.file.path}resource.log
+    path: /opt/log/
+    max-size: 10MB
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${logging.file.path}archived/company_bot.%d{yyyy-MM-dd}.%i.log
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 2GB
