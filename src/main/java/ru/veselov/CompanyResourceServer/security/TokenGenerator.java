@@ -1,5 +1,6 @@
 package ru.veselov.CompanyResourceServer.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,20 +19,23 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @Component
+@Slf4j
 public class TokenGenerator {
 
     private final JwtEncoder accessTokenEncoder;
-    @Qualifier("jwtRefreshTokenEncoder")
-    private final JwtEncoder refreshTokenEncoder;
     @Autowired
-    public TokenGenerator(JwtEncoder accessTokenEncoder, JwtEncoder refreshTokenEncoder) {
+    @Qualifier("jwtRefreshTokenEncoder")
+    private  JwtEncoder refreshTokenEncoder;
+
+    @Autowired
+    public TokenGenerator(JwtEncoder accessTokenEncoder) {
         this.accessTokenEncoder = accessTokenEncoder;
-        this.refreshTokenEncoder = refreshTokenEncoder;
     }
 
 
     private String createAccessToken(Authentication authentication){
         ResourceUser user = (ResourceUser) authentication.getPrincipal();
+        log.info(user.getPassword()+ user.getId());
         Instant now = Instant.now();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
@@ -47,7 +51,7 @@ public class TokenGenerator {
     private String createRefreshToken(Authentication authentication){
         ResourceUser user = (ResourceUser) authentication.getPrincipal();
         Instant now = Instant.now();
-
+        log.info("{} || {}", user.getPassword(), user.getId());
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("CompanyResourceServer")
                 .issuedAt(now)
@@ -86,6 +90,7 @@ public class TokenGenerator {
         else {
             refreshToken = createRefreshToken(authentication);
         }
+        log.info(refreshToken);
         tokenDTO.setRefreshToken(refreshToken);
         return tokenDTO;
         }

@@ -90,7 +90,7 @@ public class KeyUtils {
                 PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
                 byte[] privateKeyBytes = Files.readAllBytes(privateKeyFile.toPath());
-                EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+                PKCS8EncodedKeySpec  privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
                 PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
                 keyPair = new KeyPair(publicKey,privateKey);
                 return keyPair;

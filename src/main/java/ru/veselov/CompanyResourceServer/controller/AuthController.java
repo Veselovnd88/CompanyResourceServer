@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -29,16 +30,15 @@ public class AuthController {
     private final UserDetailsManager userDetailsManager;
 
     private final DaoAuthenticationProvider daoAuthenticationProvider;
-
+    @Autowired
     @Qualifier("jwtRefreshTokenAuthProvider")
-    private final JwtAuthenticationProvider refreshTokenProvider;
+    JwtAuthenticationProvider refreshTokenAuthProvider;
 
     private final TokenGenerator tokenGenerator;
     @Autowired
-    public AuthController(UserDetailsManager userDetailsManager, DaoAuthenticationProvider daoAuthenticationProvider, JwtAuthenticationProvider refreshTokenProvider, TokenGenerator tokenGenerator) {
+    public AuthController(UserDetailsManager userDetailsManager, DaoAuthenticationProvider daoAuthenticationProvider, TokenGenerator tokenGenerator) {
         this.userDetailsManager = userDetailsManager;
         this.daoAuthenticationProvider = daoAuthenticationProvider;
-        this.refreshTokenProvider = refreshTokenProvider;
         this.tokenGenerator = tokenGenerator;
     }
 
@@ -69,7 +69,7 @@ public class AuthController {
     public ResponseEntity token(@RequestBody TokenDTO tokenDTO){
         //FIXME неправильно срабатывает authentication
         log.info(tokenDTO.getRefreshToken());
-        Authentication authentication = refreshTokenProvider.authenticate(
+        Authentication authentication = refreshTokenAuthProvider.authenticate(
                 new BearerTokenAuthenticationToken(tokenDTO.getRefreshToken())
         );
         return ResponseEntity.ok(tokenGenerator.createToken(authentication));

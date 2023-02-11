@@ -6,14 +6,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import liquibase.pro.packaged.D;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -53,17 +51,13 @@ public class ResourceServerSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf().disable()
                 .authorizeHttpRequests((authorize)->authorize
-                        .antMatchers(HttpMethod.POST,"api/customer**")
-                        .hasAuthority("SCOPE_SAVE_INFO")
-                        .antMatchers("api/divs").hasAnyRole("MANAGER,ADMIN")
-                        .antMatchers("/api/auth/**").permitAll()
+                        .antMatchers("/api/auth/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors().disable()
                 .httpBasic().disable()
-                .oauth2ResourceServer(oauth2->oauth2.jwt(
-                        (jwt)-> jwt.jwtAuthenticationConverter(jwtToUserConverter)
-                ))//будет кастомизироваться
+                .oauth2ResourceServer((oauth2)->oauth2.jwt((jwt)->jwt.jwtAuthenticationConverter(jwtToUserConverter))
+                )//будет кастомизироваться
                 .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(
                         (exceptions)-> exceptions
