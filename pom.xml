@@ -89,10 +89,10 @@
 			</plugin>
 
 			<plugin>
-				<!--В версии 4.7.1 достаточно прописывать относительные пути ресурсов-->
+				<!--В версии 4.9.1 достаточно прописывать относительные пути ресурсов-->
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>4.7.1</version>
+				<version>4.9.1</version>
 				<configuration>
 					<propertyFile>liquibase.properties</propertyFile>
 					<changeLogFile>db/changelog/db.changelog-master.xml</changeLogFile>
